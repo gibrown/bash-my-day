@@ -66,11 +66,11 @@ echo "GTD"
 osascript -e 'activate application "emacs"'
 timed_msg "Start five minutes of gtd" 4 &&
 timed_msg "Finish gtd in one minute" 1 &&
-timed_confirm "Ready for meditation?" 120
+timed_confirm "Ready for meditation?" "meditate?" 120
 
 echo "Meditation"
 timed_msg "Start meditation in one minute" 1 &&
-timed_msg "Start meditation" 10 &&
+timed_msg "Start meditation" $(timed_weekly_ramp 2016-12-07 1 3 5 7 10) &&
 timed_msg "Finish" 1 &&
 timed_confirm "Ready for journal?" "journal?" 180
 

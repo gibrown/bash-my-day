@@ -47,6 +47,24 @@ function timed_confirm() {
 done
 }
 
+# From the starting date, adjust the number of minutes returned
+#  based on the other arguments
+#  This makes for an easy way to get into a new habit. eg meditation for
+#  one minute a day ramping up to 10 minutes a day over a few weeks
+# $1 : Starting Date in Y-m-d format
+# $* : The weekly ramp up.
+function timed_weekly_ramp() {
+	d1=$(date -j -f "%Y-%m-%d" "$1" "+%s")
+	d2=$(date +%s)
+	diff=$(( (d2 - d1) / 86400 / 7 + 2 ))
+
+	if [ -z "${!diff}" ]; then
+		echo "${@: -1}"
+	else
+		echo "${!diff}"
+	fi
+}
 
 export -f timed_confirm
 export -f timed_msg
+export -f timed_weekly_ramp
