@@ -23,8 +23,7 @@ function timed_msg() {
 # $3 : Time in seconds
 function timed_confirm() {
 	i_do_say $1
-	#delay=$3
-	delay=1
+	delay=$3
 	cnt=0
 	while true; do
 		read -n 1 -t $delay -p "$delay seconds: 'd' to delay 5 min or any key to continue" varkey
