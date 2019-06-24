@@ -31,7 +31,7 @@ function timed_confirm() {
 			echo
 			i_do_say $2
 			cnt=$((cnt+1))
-			if [[ "$cnt" -gt 20 ]]; then
+			if [[ "$cnt" -gt 7 ]]; then
 				cnt=0
 				i_do_say 'Are you paying attention? Time to start a different script?'
 			fi
