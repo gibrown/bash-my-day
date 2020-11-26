@@ -8,11 +8,8 @@ source timed-functions.sh
 
 echo "some code review; 10 min code;"
 
-osascript -e 'tell application "iTunes"' -e 'set new_playlist to "Coding" as string' -e "play playlist new_playlist" -e "end tell"
-
 timed_confirm "Start code review. Ready to close Slack?" "Close slack and code?" 300
 osascript -e 'quit app "Slack"'
-osascript -e 'activate application "emacs"'
 
 timed_msg "Review code" 30 &&
 timed_confirm "Done reviewing?" "Done reviewing?" 300

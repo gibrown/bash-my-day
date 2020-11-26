@@ -6,6 +6,12 @@ function i_do_say() {
 	say --rate 250 $*
 }
 
+function paws_in_air() {
+	msg="Pause. . Breathe. . Look. . Relax. . Think. . 3. 2. 1."
+	osascript -e "display notification \"$msg\" with title \"Do It\""
+	say --rate 100 $msg
+}
+
 # $1 : Activity string
 # $2 : Time
 function timed_msg() {
@@ -33,7 +39,7 @@ function timed_confirm() {
 			cnt=$((cnt+1))
 			if [[ "$cnt" -gt 7 ]]; then
 				cnt=0
-				i_do_say 'Are you paying attention? Time to start a different script?'
+				paws_in_air
 			fi
 		elif [ "d" == "$varkey" ]; then
 			varkey=''
