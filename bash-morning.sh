@@ -47,6 +47,11 @@ case "$TYPE" in
 	"personal")
 	;;
 	*)
+		echo "Ten Minutes Coding"
+		osascript -e 'activate application "emacs"'
+		timed_msg "Start coding now." 5 &&
+		timed_confirm "Are you really coding?" "Start Slack" 600
+
 		echo "Slack"
 		osascript -e 'activate application "Slack"'
 		timed_msg "Check slack for 7 minutes" 5 &&
