@@ -9,12 +9,29 @@
 source timed-functions.sh
 
 if [ -z "$1" ]; then
-	TYPE="default"
+	TYPE="lead"
 else
 	TYPE="$1"
 fi
 
+tabs=`strings ~/Library/Application\ Support/Google/Chrome/Default/Sessions/Tabs_* | grep -E '^https?://' | sort | uniq | wc -l`
+
+if [ "$tabs" -gt 100 ]; then
+	osascript -e 'activate application "Google Chrome"'
+	echo "Clean tabs"
+	timed_msg "Yikes! You have about $tabs tabs open." 10 &&
+	timed_confirm "Have you closed some tabs?" "Move on." 600
+fi
+
 case "$TYPE" in
+	"code")
+		i_do_say 'OK. Get coding!'
+		echo "review; code;"
+	;;
+	"lead")
+		i_do_say 'Time to lead!'
+		echo "prioritize; fires; lead!"
+	;;
 	"catchup")
 		i_do_say 'OK. Play catchup.'
 		echo "slack; p2s; gtd; standup; play catchup;"
@@ -23,35 +40,39 @@ case "$TYPE" in
 		i_do_say 'Personal catchup.'
 		echo "play catchup; focus"
 	;;
-	"resolver")
-		i_do_say 'Resolve some issues.'
-	;;
-	"code")
-		i_do_say 'OK. Get coding!'
-		echo "review; code;"
-	;;
 	"livechat")
 		echo "slack; p2s; gtd; standup; prep chat; chat;"
 	;;
-	"normal")
-		echo "slack; p2s; gtd; standup; review; code;"
-	;;
 	*)
-		echo "slack; p2s; gtd; standup; review; code;"
+		i_do_say 'Lead or code!'
+		echo "lead or code?"
+		exit
 	;;
 esac
 
+# Trigger starting
 case "$TYPE" in
 	"code")
-	;;
-	"personal")
-	;;
-	*)
 		echo "Ten Minutes Coding"
 		osascript -e 'activate application "emacs"'
 		timed_msg "Start coding now." 5 &&
 		timed_confirm "Are you really coding?" "Start Slack" 600
+	;;
+	"lead")
+		echo "GTD"
+		osascript -e 'activate application "emacs"'
+		timed_msg "Start ten minutes prioritizing GTD." 8 &&
+		timed_msg "Finish gtd in two minutes" 1 &&
+		timed_msg "Finish gtd in one minute" 1 &&
+		timed_confirm "GTD Done?" "Fires?" 60
+	;;
+	*)
+	;;
+esac
 
+# Look for Fires
+case "$TYPE" in
+	"code"|"lead")
 		echo "Slack"
 		osascript -e 'activate application "Slack"'
 		timed_msg "Check slack for 7 minutes" 5 &&
@@ -60,7 +81,7 @@ case "$TYPE" in
 		echo "Alerts"
 		osascript -e 'tell application "Google Chrome"' -e 'make new window' -e 'activate' -e'end tell'
 		open https://mail.google.com/mail/u/1/
-		timed_msg "look at e-mail alerts" 3
+		timed_msg "look at e-mail fires" 3
 
 		echo "P2 notifications"
 		open https://elasticsearchp2.wordpress.com/
@@ -68,8 +89,11 @@ case "$TYPE" in
 		timed_msg "Open p2 notifications, but do not read!" 3 &&
 		timed_msg "Finish triaging p2s in one minutes" 1
 	;;
+	*)
+	;;
 esac
 
+# Real Work
 case "$TYPE" in
 	"catchup")
 		paws_in_air
@@ -142,21 +166,6 @@ case "$TYPE" in
 		timed_confirm "Working on GTD?" "Working?" 300
 
 	;;
-	"resolver")
-		open "https://elasticsearchp2.wordpress.com/"
-		open "https://nosaraproject.wordpress.com/"
-
-		osascript -e 'activate application "Google Chrome"'
-		timed_msg "Go through unresolved" 60 &&
-		timed_confirm "Done with p2s?" "Done with p2s?" 300
-
-		echo "Select a p2 issue to resolve"
-		timed_msg "Select an issue to resolve" 5 &&
-		timed_confirm "Picked an issue?" "Still looking?" 600
-		timed_msg "Start coding now" 5 &&
-		timed_confirm "Are you really coding?" "Still coding?" 600
-		timed_msg "Code for an hour." 55
-	;;
 	"livechat")
 		echo "Prep live chat."
 		timed_confirm "Prep for live chat." "Ready for live chat?" 300
@@ -179,7 +188,36 @@ case "$TYPE" in
 
 		timed_msg "Chat for an hour." 55
 	;;
-	*)
+	"lead")
+		paws_in_air
+		echo "Close Slack and start some real planning."
+		timed_confirm "Start some real planning. Ready to close Slack?" "Close slack and code?" 300
+		osascript -e 'quit app "Slack"'
+
+		osascript -e 'activate application "Google Chrome"'
+		timed_msg "Plan for 30 minutes." 30 &&
+		timed_confirm "Done planning?" "Done planning?" 600
+
+		paws_in_air
+		echo "Hiring"
+		open "https://app.greenhouse.io/alljobs"
+		osascript -e 'activate application "Google Chrome"'
+		timed_msg "Check in on hiring status." 10 &&
+		timed_confirm "Done hiring?" "Done hiring?" 300
+
+		echo "P2 Time"
+		osascript -e 'activate application "Google Chrome"'
+		timed_msg "Answer P2s." 30 &&
+		timed_msg "Any P2s to write?" 30 &&
+		timed_confirm "Done p2ing?" "Done p2ing?" 600
+
+		osascript -e 'activate application "Slack"'
+
+		timed_msg "Clean out Slack" 10 &&
+		timed_confirm "Slack clean?" "Slack clean?" 600
+
+	;;
+	"code")
 		paws_in_air
 		echo "Code Review. Close Slack?"
 		timed_confirm "Start code review. Ready to close Slack?" "Close slack and code?" 300
