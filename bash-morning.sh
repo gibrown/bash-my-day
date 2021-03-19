@@ -95,6 +95,94 @@ esac
 
 # Real Work
 case "$TYPE" in
+	"lead")
+		paws_in_air
+		echo "Close Slack and start some real work."
+		timed_confirm "Start some real work. Ready to close Slack?" "Close slack and work?" 300
+		osascript -e 'quit app "Slack"'
+
+		osascript -e 'activate application "Google Chrome"'
+		timed_msg "Put out fires for 30 minutes." 30 &&
+		timed_confirm "Done with fires?" "Done with fires?" 600
+
+		osascript -e 'activate application "Google Chrome"'
+		timed_msg "Do top priority." 30 &&
+		timed_confirm "Look at hiring?" "Look at hiring?" 600
+
+		paws_in_air
+		echo "Hiring"
+		open "https://app.greenhouse.io/alljobs"
+		osascript -e 'activate application "Google Chrome"'
+		timed_msg "Check in on hiring status." 10 &&
+		timed_confirm "Done hiring?" "Done hiring?" 300
+
+		echo "P2 Time"
+		osascript -e 'activate application "Google Chrome"'
+		timed_msg "Answer P2s." 30 &&
+		timed_msg "Any P2s to write?" 30 &&
+		timed_confirm "Done p2ing?" "Done p2ing?" 600
+
+		osascript -e 'activate application "Slack"'
+
+		timed_msg "Clean out Slack" 10 &&
+		timed_confirm "Slack clean?" "Slack clean?" 600
+	;;
+	"code")
+		paws_in_air
+		echo "Code Review. Close Slack?"
+		timed_confirm "Start code review. Ready to close Slack?" "Close slack and code?" 300
+		osascript -e 'quit app "Slack"'
+
+		osascript -e 'activate application "Google Chrome"'
+		timed_msg "Review code" 30 &&
+		timed_confirm "Done reviewing?" "Done reviewing?" 300
+
+		echo "Coding"
+		osascript -e 'activate application "emacs"'
+		timed_msg "Start coding now." 5 &&
+		timed_confirm "Are you really coding?" "Still coding?" 600
+
+		timed_msg "Code for an hour." 55
+
+		paws_in_air
+		timed_confirm "Ready for notifications?" "Notifications?" 600
+
+		osascript -e 'activate application "Slack"'
+		osascript -e 'activate application "Google Chrome"'
+
+		echo "GTD"
+		osascript -e 'activate application "emacs"'
+		timed_msg "Start five minutes of gtd" 3 &&
+		timed_msg "Finish gtd in two minutes" 1 &&
+		timed_msg "Finish gtd in one minute" 1
+
+		echo "Standup"
+		timed_msg "Write up standup" 2 &&
+		timed_confirm "Standup posted?" "coding?" 180
+
+		if [[ $(date +%u) -eq 5 ]] ; then
+			i_do_say --rate 250 'It is friday. Review!'
+			paws_in_air
+
+			echo "GTD"
+			osascript -e 'activate application "emacs"'
+			timed_msg "Start ten minutes of gtd. Full review" 8 &&
+			timed_msg "Finish gtd in two minutes" 1 &&
+			timed_msg "Finish gtd in one minute" 1
+			timed_confirm "GTD Done?" "Start Standup?" 60
+
+			echo "Catchup email"
+			open https://mail.google.com/mail/u/1/
+			osascript -e 'activate application "Google Chrome"'
+			timed_msg "Catchup on e-mail" 10 &&
+			timed_confirm "Done with e-mail?" "Done with e-mail?" 300
+
+			echo "Catchup p2 and tabs"
+			osascript -e 'activate application "Google Chrome"'
+			timed_msg "Catchup on p2 tabs" 30 &&
+			timed_confirm "Done with p2s?" "Save p2s for later?" 300
+		fi
+	;;
 	"catchup")
 		paws_in_air
 		echo "GTD"
@@ -188,89 +276,6 @@ case "$TYPE" in
 
 		timed_msg "Chat for an hour." 55
 	;;
-	"lead")
-		paws_in_air
-		echo "Close Slack and start some real planning."
-		timed_confirm "Start some real planning. Ready to close Slack?" "Close slack and code?" 300
-		osascript -e 'quit app "Slack"'
-
-		osascript -e 'activate application "Google Chrome"'
-		timed_msg "Plan for 30 minutes." 30 &&
-		timed_confirm "Done planning?" "Done planning?" 600
-
-		paws_in_air
-		echo "Hiring"
-		open "https://app.greenhouse.io/alljobs"
-		osascript -e 'activate application "Google Chrome"'
-		timed_msg "Check in on hiring status." 10 &&
-		timed_confirm "Done hiring?" "Done hiring?" 300
-
-		echo "P2 Time"
-		osascript -e 'activate application "Google Chrome"'
-		timed_msg "Answer P2s." 30 &&
-		timed_msg "Any P2s to write?" 30 &&
-		timed_confirm "Done p2ing?" "Done p2ing?" 600
-
-		osascript -e 'activate application "Slack"'
-
-		timed_msg "Clean out Slack" 10 &&
-		timed_confirm "Slack clean?" "Slack clean?" 600
-
-	;;
-	"code")
-		paws_in_air
-		echo "Code Review. Close Slack?"
-		timed_confirm "Start code review. Ready to close Slack?" "Close slack and code?" 300
-		osascript -e 'quit app "Slack"'
-
-		osascript -e 'activate application "Google Chrome"'
-		timed_msg "Review code" 30 &&
-		timed_confirm "Done reviewing?" "Done reviewing?" 300
-
-		echo "Coding"
-		osascript -e 'activate application "emacs"'
-		timed_msg "Start coding now." 5 &&
-		timed_confirm "Are you really coding?" "Still coding?" 600
-
-		timed_msg "Code for an hour." 55
-
-		paws_in_air
-		timed_confirm "Ready for notifications?" "Notifications?" 600
-
-		osascript -e 'activate application "Slack"'
-		osascript -e 'activate application "Google Chrome"'
-
-		echo "GTD"
-		osascript -e 'activate application "emacs"'
-		timed_msg "Start five minutes of gtd" 3 &&
-		timed_msg "Finish gtd in two minutes" 1 &&
-		timed_msg "Finish gtd in one minute" 1
-
-		echo "Standup"
-		timed_msg "Write up standup" 2 &&
-		timed_confirm "Standup posted?" "coding?" 180
-
-		if [[ $(date +%u) -eq 5 ]] ; then
-			i_do_say --rate 250 'It is friday. Review!'
-			paws_in_air
-
-			echo "GTD"
-			osascript -e 'activate application "emacs"'
-			timed_msg "Start ten minutes of gtd. Full review" 8 &&
-			timed_msg "Finish gtd in two minutes" 1 &&
-			timed_msg "Finish gtd in one minute" 1
-			timed_confirm "GTD Done?" "Start Standup?" 60
-
-			echo "Catchup email"
-			open https://mail.google.com/mail/u/1/
-			osascript -e 'activate application "Google Chrome"'
-			timed_msg "Catchup on e-mail" 10 &&
-			timed_confirm "Done with e-mail?" "Done with e-mail?" 300
-
-			echo "Catchup p2 and tabs"
-			osascript -e 'activate application "Google Chrome"'
-			timed_msg "Catchup on p2 tabs" 30 &&
-			timed_confirm "Done with p2s?" "Save p2s for later?" 300
-		fi
+	*)
 	;;
 esac

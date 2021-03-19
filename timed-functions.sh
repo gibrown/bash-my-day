@@ -31,8 +31,9 @@ function timed_confirm() {
 	i_do_say $1
 	delay=$3
 	cnt=0
+	re='^[0-9]+$'
 	while true; do
-		read -n 1 -t $delay -p "$delay seconds: 'd' to delay 5 min or any key to continue" varkey
+		read -n 1 -t $delay -p "$delay seconds: 'd' => +5 min; [1-9] => [10-90] min; any key => end." varkey
 		if [ $? -ne 0 ]; then
 			echo
 			i_do_say $2
@@ -46,6 +47,11 @@ function timed_confirm() {
 			delay="$(($delay + 300))"
 			echo
 			echo "Delaying 5 min"
+		elif [[ $varkey =~ $re ]]; then
+			extradelay=$((varkey*10))
+			echo
+			read -n 1 -t $((extradelay*60)) -p "Paused $extradelay minutes" varkey
+			echo
 		else
 			echo
 			break
