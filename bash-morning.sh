@@ -14,9 +14,10 @@ else
 	TYPE="$1"
 fi
 
-tabs=`strings ~/Library/Application\ Support/Google/Chrome/Default/Sessions/Tabs_* | grep -E '^https?://' | sort | uniq | wc -l`
+tabs=`strings ~/Library/Application\ Support/Google/Chrome/Default/Sessions/Tabs_* | sed -nE 's/^([^:]+):\/\/(.*)\/$/\2/p' | grep -v "newtab" | grep -v "new-tab-page" | sort | uniq | wc -l`
 
-if [ "$tabs" -gt 100 ]; then
+
+if [ "$tabs" -gt 50 ]; then
 	osascript -e 'activate application "Google Chrome"'
 	echo "Clean tabs"
 	timed_msg "Yikes! You have about $tabs tabs open." 10 &&
@@ -35,10 +36,6 @@ case "$TYPE" in
 	"catchup")
 		i_do_say 'OK. Play catchup.'
 		echo "slack; p2s; gtd; standup; play catchup;"
-	;;
-	"personal")
-		i_do_say 'Personal catchup.'
-		echo "play catchup; focus"
 	;;
 	"livechat")
 		echo "slack; p2s; gtd; standup; prep chat; chat;"
@@ -72,7 +69,7 @@ esac
 
 # Look for Fires
 case "$TYPE" in
-	"code"|"lead")
+	"code"|"lead"|"catchup")
 		echo "Slack"
 		osascript -e 'activate application "Slack"'
 		timed_msg "Check slack for 7 minutes" 5 &&
@@ -106,15 +103,10 @@ case "$TYPE" in
 		timed_confirm "Done with fires?" "Done with fires?" 600
 
 		osascript -e 'activate application "Google Chrome"'
-		timed_msg "Do top priority." 30 &&
-		timed_confirm "Look at hiring?" "Look at hiring?" 600
+		timed_msg "Do top priority." 60 &&
+		timed_confirm "Look at P2s?" "Look at P2s?" 600
 
 		paws_in_air
-		echo "Hiring"
-		open "https://app.greenhouse.io/alljobs"
-		osascript -e 'activate application "Google Chrome"'
-		timed_msg "Check in on hiring status." 10 &&
-		timed_confirm "Done hiring?" "Done hiring?" 300
 
 		echo "P2 Time"
 		osascript -e 'activate application "Google Chrome"'
@@ -187,6 +179,34 @@ case "$TYPE" in
 		paws_in_air
 		echo "GTD"
 		osascript -e 'activate application "emacs"'
+		timed_msg "Start ten minutes of gtd." 8 &&
+		timed_msg "Finish gtd in two minutes" 1 &&
+		timed_msg "Finish gtd in one minute" 1
+		timed_confirm "GTD Done?" "Start Standup?" 60
+
+		osascript -e 'activate application "Google Chrome"'
+		timed_msg "Review code" 30 &&
+		timed_confirm "Done reviewing?" "Done reviewing?" 300
+
+		osascript -e 'activate application "Google Chrome"'
+		timed_msg "Go through old tabs" 60 &&
+		timed_confirm "Done with p2s?" "Done with p2s?" 300
+
+		echo "Catchup email"
+		open https://mail.google.com/mail/u/1/
+		osascript -e 'activate application "Google Chrome"'
+		timed_msg "Catchup on e-mail" 10 &&
+		timed_confirm "Done with e-mail?" "Done with e-mail?" 300
+
+		echo " Cleanup p2 and tabs"
+		timed_msg "Catchup on p2 tabs" 30 &&
+		timed_confirm "Done with p2s?" "Save p2s for later?" 300
+
+	;;
+	"review")
+		paws_in_air
+		echo "GTD"
+		osascript -e 'activate application "emacs"'
 		timed_msg "Start ten minutes of gtd. Full review" 8 &&
 		timed_msg "Finish gtd in two minutes" 1 &&
 		timed_msg "Finish gtd in one minute" 1
@@ -219,39 +239,6 @@ case "$TYPE" in
 		echo "Catchup p2 and tabs"
 		timed_msg "Catchup on p2 tabs" 30 &&
 		timed_confirm "Done with p2s?" "Save p2s for later?" 300
-
-	;;
-	"personal")
-		paws_in_air
-		echo "GTD"
-		osascript -e 'activate application "emacs"'
-		timed_msg "Start ten minutes of gtd. Full review" 8 &&
-		timed_msg "Finish gtd in two minutes" 1 &&
-		timed_msg "Finish gtd in one minute" 1
-		timed_confirm "GTD Done?" "Start cleanup?" 60
-
-		items=(
-			"desk cleanup"
-			"checkin"
-			"delete email"
-			"phone and messages"
-			"go through mail"
-			"email inbox"
-		)
-		for i in "${items[@]}"
-		do
-			echo $i
-			timed_msg "Start ten minutes of $i" 8 &&
-			timed_msg "Finish $i in two minutes" 1 &&
-			timed_msg "Finish $i in one minute" 1
-			timed_confirm "$i Done?" "Done?" 60
-		done
-
-		paws_in_air
-		echo "Start"
-		osascript -e 'activate application "emacs"'
-		timed_msg "Start on GTD" 8
-		timed_confirm "Working on GTD?" "Working?" 300
 
 	;;
 	"livechat")

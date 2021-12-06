@@ -16,8 +16,15 @@ function paws_in_air() {
 # $2 : Time
 function timed_msg() {
 	i_do_say $1
+	re='^[0-9]+$'
 	read -t "$(($2 * 60))"
 	if [ $? -ne 0 ]; then
+		return 0
+	elif [[ $varkey =~ $re ]]; then
+		extradelay=$((varkey*10))
+		echo
+		read -n 1 -t $((extradelay*60)) -p "Paused $extradelay minutes" varkey
+		echo
 		return 0
 	else
 		return 1
@@ -40,6 +47,7 @@ function timed_confirm() {
 			cnt=$((cnt+1))
 			if [[ "$cnt" -gt 7 ]]; then
 				cnt=0
+				delay="$(($delay * 2))"
 				paws_in_air
 			fi
 		elif [ "d" == "$varkey" ]; then
